@@ -1,0 +1,25 @@
+{
+  "name": "repl-play",
+  "version": "1.0.0",
+  "description": "Repl your js code",
+  "main": "main.js",
+  "scripts": {
+    "start": "./node_modules/.bin/electron ."
+  },
+  "keywords": [
+    "repl",
+    "js",
+    "test"
+  ],
+  "author": "rafakwolf@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "codemirror": "^5.62.2",
+    "mini.css": "^3.0.1",
+    "ts-node": "^10.1.0"
+  },
+  "devDependencies": {
+    "@types/codemirror": "^5.60.2",
+    "electron": "^13.1.7"
+  }
+}

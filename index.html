@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Repl-Play</title>
+
+    <link rel="stylesheet" href="./node_modules/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="./node_modules/codemirror/theme/monokai.css">
+
+    <script src="./node_modules/codemirror/lib/codemirror.js"></script>
+    <script src="./node_modules/codemirror/mode/javascript/javascript.js"></script>
+
+    <link rel="stylesheet" href="./node_modules/mini.css/dist/mini-dark.min.css">
+
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                <textarea id="editor">
+function test() {
+    console.log("sample");
+}
+test();
+                </textarea>
+            </div>
+            <div class="col-sm">
+                <textarea id="results" style="width: 100%;" rows="20" readonly="true"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const $myCodeMirror = CodeMirror.fromTextArea(document.querySelector('#editor'), {
+            lineNumbers: true,
+            theme: 'monokai',
+            mode: "javascript",
+            smartIndent: true,
+            viewportMargin: 30
+        });
+
+        const debounce = (fn, delay) => {
+            let timeOutId;
+            return function(...args) {
+                if(timeOutId) {
+                    clearTimeout(timeOutId);
+                }
+                timeOutId = setTimeout(() => {
+                    fn(...args);
+                },delay);
+            }
+        }
+
+
+        const { ipcRenderer } = require('electron');
+
+        const results = document.querySelector("#results"); 
+
+        let res = "";
+
+        ipcRenderer.on('main/compiled', function(event, mensagemDaMain) {
+            results.textContent = mensagemDaMain;
+        });
+
+        function sendCode(instance, changeObj) {
+            ipcRenderer.send('renderer/compile', instance.getValue());
+        }
+
+        const debouncedSendCode = debounce(sendCode, 1000);
+
+        $myCodeMirror.on("change", (instance, changeObj) => {
+            debouncedSendCode(instance, changeObj);
+        });
+    </script>
+</body>
+</html>
